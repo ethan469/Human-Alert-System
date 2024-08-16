@@ -26,7 +26,7 @@ net = jetson.inference.detectNet(opt.network, sys.argv, opt.threshold)
 # create video sources & outputs
 input = jetson.utils.videoSource(opt.input_URI, argv=sys.argv)
 output = jetson.utils.videoOutput(opt.output_URI, argv=sys.argv)
-
+alert_classes = ["person"]
 # process frames until the user exits
 while True:
 	# capture the next image
@@ -38,8 +38,14 @@ while True:
 	# print the detections
 	print("detected {:d} objects in image".format(len(detections)))
 
-	for detection in detections:
-		print(detection)
+	for detection in detections: 
+		ClassID = detection.ClassID
+		Classname = net.GetClassLabel(ClassID)
+		if Classname in alert_classes:
+			print(f'I detected a {Classname}')
+	# to do detect whether object is human or not. 
+    #(https://rawgit.com/dusty-nv/jetson-inference/master/docs/html/python/jetson.inference.html#detectNet)
+		
 
 	# render the image
 	output.Render(img)
@@ -48,7 +54,7 @@ while True:
 	output.SetStatus("{:s} | Network {:.0f} FPS".format(opt.network, net.GetNetworkFPS()))
 
 	# print out performance info
-	net.PrintProfilerTimes()
+	# net.PrintProfilerTimes()
 
 	# exit on input/output EOS
 	if not input.IsStreaming() or not output.IsStreaming():
