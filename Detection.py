@@ -7,8 +7,8 @@ import sys
 # parse the command line
 parser = argparse.ArgumentParser(description="Locate objects in a live camera stream using an object detection DNN.")
 
-parser.add_argument("input_URI", type=str, default="", nargs='?', help="URI of the input stream")
-parser.add_argument("output_URI", type=str, default="", nargs='?', help="URI of the output stream")
+parser.add_argument("input_URI", type=str, default="/dev/video0", nargs='?', help="URI of the input stream")
+parser.add_argument("output_URI", type=str, default="output.mp4", nargs='?', help="URI of the output stream")
 parser.add_argument("--network", type=str, default="ssd-mobilenet-v2", help="pre-trained model to load (see below for options)")
 parser.add_argument("--overlay", type=str, default="box,labels,conf", help="detection overlay flags (e.g. --overlay=box,labels,conf)\nvalid combinations are:  'box', 'labels', 'conf', 'none'")
 parser.add_argument("--threshold", type=float, default=0.5, help="minimum detection threshold to use") 
@@ -31,18 +31,19 @@ alert_classes = ["person"]
 while True:
 	# capture the next image
 	img = input.Capture()
+	if img is None:
+		print("No image detected", end = "\r")
+		continue
 
 	# detect objects in the image (with overlay)
 	detections = net.Detect(img, overlay=opt.overlay)
-
-	# print the detections
-	print("detected {:d} objects in image".format(len(detections)))
-
+	if len(detections)==0:
+		print("No objects in frame", end = "\r")
 	for detection in detections: 
 		ClassID = detection.ClassID
 		Classname = net.GetClassLabel(ClassID)
 		if Classname in alert_classes:
-			print(f'I detected a {Classname}')
+			print(f'I detected a {Classname}',end = "\r")
 	# to do detect whether object is human or not. 
     #(https://rawgit.com/dusty-nv/jetson-inference/master/docs/html/python/jetson.inference.html#detectNet)
 		
