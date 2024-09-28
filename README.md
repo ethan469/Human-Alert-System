@@ -1,5 +1,6 @@
 # Human-Alert-System
-A camera that detects whether or not a human is in frame and sends an email.
+This Python 3 computer vision project is intended to run on the Jetson Nano. The project processes image data from a configured video input such as a USB web camera, processes the image with object detection networks, and outputs a message to the console when a person is detected in the video stream. The long-term goals or this project are to save an image or video clip when a person is detected and send it to the user via email.
+
 
 # Setting up the project:
 1. Setup the prerequisite jetson-inference project by following their instruction at (https://github.com/dusty-nv/jetson-inference/).
